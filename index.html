@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title>鼠标拖拽效果</title>
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+	</head>
+
+	<body>
+		<div class="ui-dialog" id="dialog">
+
+			<div class="ui-dialog-title" id="dialogTitle">
+				用户登录
+				<a href="javascript:hideDialog();" class="ui-dialog-title-closebutton"></a>
+			</div>
+
+			<div class="ui-dialog-content">
+
+				<div class="ui-dialog-all ui-dialog-both">
+					<input type="input" class="ui-dialog-input" id="user" placeholder="手机/邮箱/用户名" />
+				</div>
+
+				<div class="ui-dialog-all ui-dialog-both">
+					<input type="input" class="ui-dialog-input" id="password" placeholder="密码" />
+				</div>
+
+				<div class="ui-dialog-all">
+					<a href="#">忘记密码</a>
+				</div>
+
+				<div>
+					<a href="#" class="ui-dialog-submit">登录</a>
+				</div>
+
+				<div class="ui-dialog-all">
+					<a href="#">立即注册</a>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- 遮罩 -->
+		<div class="mask" id="mask" onselectstart="return false">
+
+		</div>
+
+		<!-- 登录链接 -->
+		<div class="link">
+			<a href="javascript:showDialog();">登录</a>
+		</div>
+
+		<script type="text/javascript">
+			function g(id) {
+				return document.getElementById(id);
+			}
+
+			//自动居中
+			function autoCenter(el) {
+				var bodyW = document.documentElement.clientWidth;
+				var bodyH = document.documentElement.clientHeight;
+
+				var elW = el.offsetWidth;
+				var elH = el.offsetHeight;
+
+				el.style.left = (bodyW - elW) / 2 + 'px';
+				el.style.top = (bodyH - elH) / 2 + 'px';
+			}
+
+			//自动全屏 遮罩
+			function fillToBody(el) {
+				el.style.width = document.documentElement.clientWidth + 'px';
+				el.style.height = document.documentElement.clientHeight + 'px';
+			}
+			var mouseOffsetX = 0;
+			var mouseOffsetY = 0; //偏移
+			var isDraging = false;
+			//鼠标事件1 在标题栏上按下（计算鼠标相对于拖拽元素左上角的坐标，并标记元素为可拖拽）
+			g('dialogTitle').addEventListener('mousedown', function(e) {
+				var e = e || window.event;
+				mouseOffsetX = e.pageX - g('dialog').offsetLeft;
+				mouseOffsetY = e.pageY - g('dialog').offsetTop;
+				isDraging = true;
+			})
+			//事件二
+			document.onmousemove = function(e) {
+				var e = e || window.event;
+				var mouseX = e.pageX; //鼠标当前位置
+				var mouseY = e.pageY;
+
+				var moveX = 0;
+				var moveY = 0;
+
+				if(isDraging === true) {
+					moveX = mouseX - mouseOffsetX; //拖动宽度
+					moveY = mouseY - mouseOffsetY;
+
+					//范围限定
+					var pageWidth = document.documentElement.clientWidth;
+					var pageHeight = document.documentElement.clientHeight;
+					var dialogWidth = g('dialog').offsetWidth;
+					var dialogHeight = g('dialog').offsetHeight;
+					var maxX = pageWidth - dialogWidth;
+					var maxY = pageHeight - dialogHeight;
+					moveX = Math.min(maxX, Math.max(0, moveX));
+					moveY = Math.min(maxY, Math.max(0, moveY));
+
+					g('dialog').style.left = moveX + 'px';
+					g('dialog').style.top = moveY + 'px';
+				}
+			}
+
+			//鼠标事件3 鼠标松开时，标记元素为不可拖拽
+			document.onmouseup = function() {
+				isDraging = false;
+			}
+
+			function showDialog() {
+				g('dialog').style.display = 'block';
+				g('mask').style.display = 'block';
+				autoCenter(g('dialog'));
+				fillToBody(g('mask'));
+			}
+
+			function hideDialog() {
+				g('dialog').style.display = 'none';
+				g('mask').style.display = 'none';
+			}
+
+			window.onresize = function() {
+				autoCenter(g('dialog'));
+				fillToBody(g('mask'));
+			}
+		</script>
+	</body>
+
+</html>
